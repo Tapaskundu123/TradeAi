@@ -8,6 +8,7 @@ interface ChatInterfaceProps {
   onSendMessage: (content: string) => void;
   isLoading: boolean;
   status: AppStatus;
+  pendingInput?: string;
 }
 
 interface ExamplePrompt {
@@ -271,7 +272,7 @@ function MessageBubble({
   );
 }
 
-export default function ChatInterface({ messages, onSendMessage, isLoading, status }: ChatInterfaceProps) {
+export default function ChatInterface({ messages, onSendMessage, isLoading, status, pendingInput }: ChatInterfaceProps) {
   const [input, setInput] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
@@ -281,6 +282,15 @@ export default function ChatInterface({ messages, onSendMessage, isLoading, stat
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isIdle = status === 'idle';
+
+  useEffect(() => {
+    if (pendingInput !== undefined) {
+      setInput(pendingInput);
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }
+  }, [pendingInput]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
